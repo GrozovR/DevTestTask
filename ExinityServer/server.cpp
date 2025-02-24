@@ -15,7 +15,7 @@ std::string generateUniqueFileName()
     return ss.str();
 }
 
-void dump_bitset(std::bitset<1024> numbers)
+std::string dump_bitset(std::bitset<1024> numbers)
 {
     try {
         static constexpr size_t bytes = 128;
@@ -35,14 +35,14 @@ void dump_bitset(std::bitset<1024> numbers)
 
         std::ofstream ofs(filename, std::ios::binary | std::ios::trunc);
         if (!ofs) {
-            // TODO: std::cerr << "Failed to open file: " << filename << std::endl;
-            return;
+            return "Failed to open dump file";
         }
         ofs.write(charBitset, bytes);
         ofs.close();
     } catch (std::exception& e) {
-        // TODO:
+        return e.what();
     }
+    return {};
 }
 }
 
@@ -75,9 +75,10 @@ void server::start(int dump_interval)
                 std::lock_guard lock(numbers_mutex);
                 numb_copy = numbers;
             }
-            dump_bitset(numb_copy);
-
-            // todo: check errors
+            auto error_str = dump_bitset(numb_copy);
+            if (!error_str.empty()) {
+                logger_.logError(error_str);
+            }
         }
     });
 }

@@ -21,10 +21,7 @@ public:
 private:
     io_context& context;
     ip::tcp::socket socket;
-
     logger logger_;
-
-    // Message will be write to socket
     streambuf streamBuffer;
     std::string current_message;
     // Random number generator
@@ -34,8 +31,6 @@ private:
     void doConnect(const ip::tcp::resolver::results_type& endpoints);
     void doRead();
     void sendRandomNumber();
-
-    // generate random number from 0 to 1023
     inline short generateNextNumber()
     {
         return dist(rng);
