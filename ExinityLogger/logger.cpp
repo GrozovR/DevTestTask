@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "logger.h"
 #include <iostream>
+#include <chrono>
 
 namespace exinity {
 
@@ -27,8 +28,23 @@ logger::~logger()
 
 void logger::log(std::string_view message)
 {
+	logMessage(prefix, message);
+}
+
+void logger::logError(std::string_view error)
+{
+	logMessage("[Error]", error);
+}
+
+void logger::logMessage(std::string_view prefix, std::string_view message)
+{
+	std::stringstream messageStr;
+	messageStr << prefix.data()
+		<< std::chrono::system_clock::now()
+		<< " " << message << std::endl;
+
 	std::lock_guard lock(queue_mutex);
-	messages.push(prefix + message.data());
+	messages.push(messageStr.str());
 
 	queue_cv.notify_one();
 }
@@ -37,7 +53,8 @@ void logger::process_messages()
 {
 	while (true) {
 		std::unique_lock lock(queue_mutex);
-		queue_cv.wait_for(lock, std::chrono::seconds(5), [this] { return !messages.empty() || stop_flag; });
+		queue_cv.wait_for(lock, std::chrono::seconds(5),
+			[this] { return !messages.empty() || stop_flag; });
 
 		while (!messages.empty()) {
 			file_stream << messages.front() << std::endl;
@@ -46,9 +63,9 @@ void logger::process_messages()
 		}
 		file_stream.flush();
 
-		if (stop_flag)
-		{
+		if (stop_flag) {
 			break;
 		}
 	}
+}
 } // namespace exinity

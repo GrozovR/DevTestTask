@@ -16,14 +16,16 @@ public:
     ~session();
 
     void start();
-
     void stop();
+
+    bool isStoped() { return is_stoped; }
 
 private:
     ip::tcp::socket socket;
     std::string answer;
     streambuf buffer;
     server& server_ref;
+    bool is_stoped;
 
     void doRead();
     void doWrite();

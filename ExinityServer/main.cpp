@@ -6,6 +6,8 @@
 int main()
 {
     setlocale(LC_ALL, "Russian");
+    std::cout << "[Server]: Started. Press ESC to exit..." << std::endl;
+
 	try {
         boost::asio::io_context io_context;
 		auto server = std::make_shared<exinity::server>(io_context, 12345);
@@ -16,13 +18,14 @@ int main()
 				io_context.run();
 			});
 
-        // для отслеживания нажатия клавиши ESC
+        // wait ESC pressing
         while (true) {
             if (_kbhit()) {
                 char ch = _getch();
                 if (ch == 27) {
-                    std::cout << "Exit" << std::endl;
-                    server->stop();
+                    boost::asio::post(io_context, [&server] {
+                        server->stop();
+                    });
                     break;
                 }
             }
@@ -33,8 +36,10 @@ int main()
         }		
 
 	} catch (std::exception& e) {
-		std::cerr << e.what() << std::endl;
+        std::cerr << "[Server] Exception: " << e.what() << std::endl;
         return 1;
 	}
+
+    std::cout << "[Server]: Stopped..." << std::endl;
     return 0;
 }

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <random>
 #include <boost/asio.hpp>
-#include <filesystem>
+#include <random>
 #include <string_view>
 #include "logger.h"
+
 
 namespace exinity {
 
@@ -34,7 +34,6 @@ private:
     void doConnect(const ip::tcp::resolver::results_type& endpoints);
     void doRead();
     void sendRandomNumber();
-    void log(std::string_view message);
 
     // generate random number from 0 to 1023
     inline short generateNextNumber()

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <string_view>
+#include <atomic>
+#include <condition_variable>
+#include <fstream>
+#include <queue>
 #include <memory>
 #include <mutex>
-#include <queue>
-#include <fstream>
+#include <string_view>
 #include <thread>
-#include <condition_variable>
-#include <atomic>
 
 namespace exinity {
 
@@ -17,6 +17,7 @@ public:
 	~logger();
 
 	void log(std::string_view message);
+	void logError(std::string_view error);
 
 private:	
 	std::ofstream file_stream;
@@ -28,6 +29,7 @@ private:
 	std::thread messages_thread;
 	std::atomic<bool> stop_flag;
 
+	void logMessage(std::string_view prefix, std::string_view message);
 	void process_messages();
 };
 
