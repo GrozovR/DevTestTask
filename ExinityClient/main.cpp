@@ -21,8 +21,6 @@ int main()
             if (_kbhit()) {
                 char ch = _getch();
                 if (ch == 27) {
-                    // NO !
-                    std::cout << "Exit" << std::endl;
                     client->close();
                     break;
                 }
@@ -33,7 +31,7 @@ int main()
         }
 
     } catch (std::exception& e) {
-        std::cerr << "Client exception: " << e.what() << std::endl;
+        std::cerr << "[Client] Exception: " << e.what() << std::endl;
         return 1;
     }
 

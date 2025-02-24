@@ -9,6 +9,7 @@
 #include "logger.h"
 #include <thread>
 #include <atomic>
+#include <list>
 
 namespace exinity {
 
@@ -20,21 +21,19 @@ public:
     server(io_context& io_context, short port);
     ~server();
 
-    void start();
+    void start(int dump_interval = 5);
     void stop();
 
     int add_number(int number);
     
     void log(std::string_view message);
 
-private:
-    
+private:    
     ip::tcp::acceptor acceptor;
-    std::vector<std::shared_ptr<session>> sessions;
+    std::list<std::shared_ptr<session>> sessions;
 
     std::thread dump_thread;
-    steady_timer timer;
-
+    std::mutex numbers_mutex;
     std::bitset<1024> numbers;
     int sum = 0;
 
@@ -43,9 +42,7 @@ private:
     std::atomic<bool> stop_flag;
 
     void do_accept();
-    void schedule_timer();
-    void dump();
+    void clean_sessions();
 };
 
 }
- 
