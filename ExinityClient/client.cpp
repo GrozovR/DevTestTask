@@ -64,7 +64,7 @@ void client::doConnect(const ip::tcp::resolver::results_type& endpoints)
                 sendRandomNumber();
             } else {
                 logger_.logError( "Connect failed: " + ec.message() );
-                // TODO: можно сделать несколько попыток
+                // TODO: it's posible to try reconnect
             }
         }
     );
